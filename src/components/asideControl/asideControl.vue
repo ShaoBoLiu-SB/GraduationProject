@@ -13,22 +13,26 @@ onMounted(() => { });
 // 菜单栏，写成数组，是为了循环渲染，然后动态添加类名
 const menuList: Array<string> = ["首页", "货币", "历史", "测试"];
 let activeIndex = ref(0);
-
 // 获取到按钮这个dom元素
 const loginButton = ref(null);
+// 获取侧边栏
+const asideBar = ref(null);
+// 获取显示隐藏按钮
+const hideShowBtn = ref(null);
+// 一个flag来确定侧边栏的显示隐藏操作
+let hideShowFlag = ref(false);
 
 // 侧边栏鼠标item移入
-function mouseOver(index: Number) {
-  this.activeIndex = index;
+function mouseOver(index:any) {
+  activeIndex.value = index;
   // 通知pinia,该让小球变成空心圆
   store.hoverDot(true);
 }
 // 侧边栏鼠标item移出
 function mouseLeave() {
-  this.activeIndex = -1;
+  activeIndex.value = -1;
   // 通知pinia,该让小球变回实心的
   store.hoverDot(false);
-
 }
 
 // 鼠标按下让按钮变小
@@ -67,9 +71,9 @@ function menuClick(index: number) {
     router.push("/history");
     store.changeIndex(index);
   }
-  if(index == 3) {
+  if (index == 3) {
     router.push('/testpage'),
-    store.changeIndex(index);
+      store.changeIndex(index);
   }
 }
 
@@ -77,18 +81,39 @@ function menuClick(index: number) {
 function activeAni(index: number) {
   activeIndex.value = index;
 }
+
+// 点击显示隐藏侧边栏函数
+function hideShow() {
+  if (hideShowFlag.value == false) {
+    asideBar.value.style = `left:-250px`;
+    hideShowBtn.value.style = `right:-40px `
+    hideShowFlag.value = true;
+  } else {
+    asideBar.value.style = `left:0`;
+    hideShowBtn.value.style = `right:0`
+    hideShowFlag.value = false;
+  }
+
+}
 </script>
 
 <template>
-  <div class="asideControl">
-    <div class="iconBox">
+  <div class="asideControl" ref="asideBar">
+    <!-- 点击显示隐藏侧边栏 -->
+    <div class="hideShow" ref="hideShowBtn" @click="hideShow" @mouseover="mouseOver(-1)" @mouseleave="mouseLeave()">>
+    </div>
+
+    <div class="iconBox" ref="hideShow">
       <svg class="icon" aria-hidden="true" @click="logoLink">
         <use xlink:href="#icon-jinrong"></use>
       </svg>
     </div>
+
     <button @mouseup="bigAndLink" @mousedown="littleAnimation" ref="loginButton" class="loginButton">
       登录
     </button>
+
+
     <div class="menus">
       <div class="menuItem" v-for="(menu, index) in menuList" :key="index" @click="menuClick(index)"
         @mouseover="mouseOver(index)" @mouseout="mouseLeave()">
@@ -127,7 +152,7 @@ function activeAni(index: number) {
 }
 
 .asideControl {
-  position: sticky;
+  position: fixed;
   z-index: 999;
   left: 0;
   top: 0;
@@ -138,6 +163,7 @@ function activeAni(index: number) {
   flex-direction: column;
   align-items: center;
   padding: 30px 0;
+  transition: left .5s;
 
   .iconBox {
     width: 50px;
@@ -237,5 +263,22 @@ function activeAni(index: number) {
       right: 0 !important;
     }
   }
+
+
+}
+
+// 点击显示侧边栏隐藏按钮
+.hideShow {
+  width: 50px;
+  height: 50px;
+  border: 1px solid cadetblue;
+  background-color: pink;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 0;
+  cursor: pointer;
 }
 </style>

@@ -86,6 +86,10 @@ button:focus-visible {
   box-sizing: border-box;
 }
 
+body {
+  background-color: black;
+}
+
 a {
   text-decoration: none;
 }
