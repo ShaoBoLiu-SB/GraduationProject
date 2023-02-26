@@ -14,7 +14,7 @@ onMounted(() => {
   const gui = new dat.GUI();
 
   const axesHelper = new THREE.AxesHelper(5);
-  // scene.add(axesHelper)
+  scene.add(axesHelper)
 
 
   // 设置相机位置
@@ -45,6 +45,11 @@ onMounted(() => {
 
   })
 
+  gltfLoader.load('/src/assets/model/testCoin.glb', (gltf: any) => {
+    const coin = gltf.scene;
+    scene.add(coin);
+  })
+
   // 初始化渲染器
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   // 设置渲染器大小
@@ -56,7 +61,7 @@ onMounted(() => {
 
   //添加控制器
   const controls = new OrbitControls(camera, renderer.domElement)
-  controls.enabled = false;
+  // controls.enabled = false;
   // 设置控制器阻尼
   // controls.enableDamping = true;
 

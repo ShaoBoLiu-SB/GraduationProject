@@ -22,18 +22,7 @@ const hideShowBtn = ref(null);
 // 一个flag来确定侧边栏的显示隐藏操作
 let hideShowFlag = ref(false);
 
-// 侧边栏鼠标item移入
-function mouseOver(index:any) {
-  activeIndex.value = index;
-  // 通知pinia,该让小球变成空心圆
-  store.hoverDot(true);
-}
-// 侧边栏鼠标item移出
-function mouseLeave() {
-  activeIndex.value = -1;
-  // 通知pinia,该让小球变回实心的
-  store.hoverDot(false);
-}
+
 
 // 鼠标按下让按钮变小
 function littleAnimation() {
@@ -59,6 +48,7 @@ function logoLink() {
 // 点击左侧的菜单栏，进行样式变化和路由跳转
 function menuClick(index: number) {
   activeIndex.value = index;
+  hideAsideBar();
   if (index == 0) {
     router.push("/home");
     store.changeIndex(index);
@@ -83,27 +73,31 @@ function activeAni(index: number) {
 }
 
 // 点击显示隐藏侧边栏函数
-function hideShow() {
-  if (hideShowFlag.value == false) {
-    asideBar.value.style = `left:-250px`;
-    hideShowBtn.value.style = `right:-40px `
-    hideShowFlag.value = true;
-  } else {
-    asideBar.value.style = `left:0`;
-    hideShowBtn.value.style = `right:0`
-    hideShowFlag.value = false;
-  }
+function showAsideBar(index: any) {
+  asideBar.value.style.left = `0`
+  console.log('asideShow');
+  // activeIndex.value = index;
 
+}
+
+function hideAsideBar() {
+  asideBar.value.style.left = `-250px`
 }
 </script>
 
 <template>
-  <div class="asideControl" ref="asideBar">
+  <div class="asideControl" ref="asideBar" @mouseleave="hideAsideBar">
     <!-- 点击显示隐藏侧边栏 -->
-    <div class="hideShow" ref="hideShowBtn" @click="hideShow" @mouseover="mouseOver(-1)" @mouseleave="mouseLeave()">>
+    <div class="hideShow" ref="hideShowBtn" @mouseenter="showAsideBar">
+      <svg t="1677313240459" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+        p-id="14987" width="200" height="200">
+        <path
+          d="M372.679931 191.690834c8.782014 0 17.565051 3.235694 24.26873 9.708106l297.484322 287.175535c13.408381 12.932544 13.408381 33.9226 0 46.855144l-297.485345 287.172465c-13.408381 12.9438-35.130102 12.9438-48.53746 0-13.408381-12.932544-13.408381-33.9226 0-46.855144l273.215592-263.744893L348.411201 248.25306c-13.408381-12.932544-13.408381-33.9226 0-46.855144C355.11488 194.926528 363.897917 191.68981 372.679931 191.690834z"
+          p-id="14988" fill="#e6e6e6"></path>
+      </svg>
     </div>
 
-    <div class="iconBox" ref="hideShow">
+    <div class="iconBox">
       <svg class="icon" aria-hidden="true" @click="logoLink">
         <use xlink:href="#icon-jinrong"></use>
       </svg>
@@ -115,8 +109,8 @@ function hideShow() {
 
 
     <div class="menus">
-      <div class="menuItem" v-for="(menu, index) in menuList" :key="index" @click="menuClick(index)"
-        @mouseover="mouseOver(index)" @mouseout="mouseLeave()">
+      <div class="menuItem" v-for="(menu, index) in menuList" :key="index" @mouseover="activeAni(index)"
+        @click="menuClick(index)">
         <span class="dot" :class="{
           activeDot: index == activeIndex,
           confirmDot: index == confirmIndex,
@@ -154,11 +148,11 @@ function hideShow() {
 .asideControl {
   position: fixed;
   z-index: 999;
-  left: 0;
+  left: -250px;
   top: 0;
   width: 250px;
   height: 100vh;
-  background-color: #e4c572;
+  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -214,7 +208,7 @@ function hideShow() {
 
       .title {
         font-size: 40px;
-        color: white;
+        color: #8a8a8a;
         position: absolute;
         transition: all 0.5s;
         right: -100px;
@@ -234,7 +228,7 @@ function hideShow() {
       position: absolute;
       font-size: 27px;
       margin-right: 5px;
-      color: white;
+      color: #8a8a8a;
       transition: all 0.5s;
       left: -10px;
     }
@@ -269,16 +263,17 @@ function hideShow() {
 
 // 点击显示侧边栏隐藏按钮
 .hideShow {
-  width: 50px;
-  height: 50px;
-  border: 1px solid cadetblue;
-  background-color: pink;
+  width: 35px;
+  height: 35px;
+  border: 2px solid rgb(161, 161, 161);
+  // background-color: pink;
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   position: absolute;
-  right: 0;
+  right: -37px;
+  top: 5px;
   cursor: pointer;
 }
 </style>

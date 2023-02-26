@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import AsideControl from "@/components/asideControl/asideControl.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, render } from "vue";
 import { storeToRefs } from "pinia";
 import { asideStore } from "@/stores/aside";
-import { flatMap } from "lodash";
 const store = asideStore();
 const { followDotFlag } = storeToRefs(store);
 let followDot = ref(null);
@@ -43,39 +42,39 @@ onMounted(() => {
   }
   document.onmousemove = e => {
     // 如果刚开始还是默认值鼠标的xy坐标还是对象里默认的0值， 那就
-    if (!pos.preX) {
+    if (!pos.curX) {
       move(e.clientX - 8, e.clientY - 8);
-      pos.curX = pos.preX = e.clientX - 8;
-      pos.curY = pos.preY = e.clientY - 8;
-    } else {
-      pos.preX = e.clientX - 8;
-      pos.preY = e.clientY - 8;
-      pos.curX = lerp(pos.preX, pos.curX, .15)
-      pos.curY = lerp(pos.preY, pos.curY, .15)
-      move(pos.curX, pos.curY)
     }
-
+    pos.curX = e.clientX - 8;
+    pos.curY = e.clientY - 8;
   };
+  function render() {
+    if (pos.preX && pos.preY) {
+      pos.preX = lerp(pos.preX, pos.curX, 0.15)
+      pos.preY = lerp(pos.preY, pos.curY, 0.15)
+      move(pos.preX, pos.preY)
+    } else {
+      pos.preX = pos.curX;
+      pos.preY = pos.curY;
+    }
+    console.log(pos.preX, pos.curX);
 
 
-  // 检测元素最终样式（有没有pointer)
-  const getStyle = (el: any, attr: any) => {
-    try {
-      return window.getComputedStyle
-        ? window.getComputedStyle(el)[attr]
-        : el.currentStyle[attr];
-    } catch (e) { }
-    return "";
-  };
+    requestAnimationFrame(render)
+
+  }
+  render();
 
 
-
-
-  // (this.pos.curr == null) && this.move(e.clientX - 8, e.clientY - 8); 
-  // this.pos.curr = { x: e.clientX - 8, y: e.clientY - 8 }; 
-  // this.cursor.classList.remove("hidden");
-
-
+  /*   // 检测元素最终样式（有没有pointer)
+    const getStyle = (el: any, attr: any) => {
+      try {
+        return window.getComputedStyle
+          ? window.getComputedStyle(el)[attr]
+          : el.currentStyle[attr];
+      } catch (e) { }
+      return "";
+    }; */
 
 
 
