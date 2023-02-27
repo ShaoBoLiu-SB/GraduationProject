@@ -70,6 +70,10 @@ function menuClick(index: number) {
 // 鼠标移到侧边栏上的菜单选项, 要有动画
 function activeAni(index: number) {
   activeIndex.value = index;
+    store.hoverDot(true);
+}
+function deActiveAni() {
+  store.hoverDot(false)
 }
 
 // 点击显示隐藏侧边栏函数
@@ -77,7 +81,6 @@ function showAsideBar(index: any) {
   asideBar.value.style.left = `0`
   console.log('asideShow');
   // activeIndex.value = index;
-
 }
 
 function hideAsideBar() {
@@ -87,7 +90,7 @@ function hideAsideBar() {
 
 <template>
   <div class="asideControl" ref="asideBar" @mouseleave="hideAsideBar">
-    <!-- 点击显示隐藏侧边栏 -->
+    <!-- 鼠标移入显示隐藏侧边栏 -->
     <div class="hideShow" ref="hideShowBtn" @mouseenter="showAsideBar">
       <svg t="1677313240459" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
         p-id="14987" width="200" height="200">
@@ -108,9 +111,9 @@ function hideAsideBar() {
     </button>
 
 
-    <div class="menus">
+    <div class="menus" @mouseover="store.hoverAside(true)" >
       <div class="menuItem" v-for="(menu, index) in menuList" :key="index" @mouseover="activeAni(index)"
-        @click="menuClick(index)">
+        @click="menuClick(index)" @mouseleave="deActiveAni">
         <span class="dot" :class="{
           activeDot: index == activeIndex,
           confirmDot: index == confirmIndex,

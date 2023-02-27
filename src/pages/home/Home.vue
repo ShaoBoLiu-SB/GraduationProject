@@ -25,6 +25,11 @@ const { homeContentList } = storeToRefs(store);
 // 获取dom元素
 const canvasBox = ref(null); //threejs承放容器
 const overLay = ref(null); //加载遮罩层的容器
+const progress_bar = ref(null); //遮罩层进度条
+const title0 = ref(null); //标题1春秋
+const title1 = ref(null); //标题1春秋
+const title2 = ref(null); //标题1春秋
+const titleArray = [title0, title1, title2]
 
 // 一些变量
 let overLayText = ref('loading')
@@ -36,6 +41,27 @@ function toHistory(index: number) {
     path: "history",
     query: { pid: homeContentList.value[index].pid },
   });
+}
+
+// 鼠标移到标题栏的动画函数
+function titleMouseOverEvent(event: any) {
+  let titleIndex = event.target.dataset.index;
+  if (titleIndex == undefined) {
+    return
+  } else if (titleIndex == 0) {
+    // console.log(title0.value);
+    title0.value.style.transform = `translateX(${-100}px)`
+  } else if (titleIndex == 1) {
+    title1.value.style.transform = `translateX(${-100}px)`
+  } else if (titleIndex == 2) {
+    title2.value.style.transform = `translateX(${-100}px)`
+  }
+}
+// 鼠标移出标题，回到原点
+function titleMouseLeaveEvent(event: any) {
+  titleArray.forEach(title => {
+    title.value.style.transform = `translatex(${0})`;
+  })
 }
 
 onMounted(() => {
@@ -52,21 +78,28 @@ onMounted(() => {
     // 加载完毕loaded
     () => {
       // Wait a little
+
       window.setTimeout(() => {
         // Animate overlay
         gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
 
         // Update loadingBarElement
-        overLay.value.classList.add('ended')
-        overLay.value.style.transform = ''
+        progress_bar.value.classList.add('ended')
+        progress_bar.value.style.transform = ''
         overLayText.value = ''
+        // overLay.value.style.display = 'none'
       }, 500)
+      window.setTimeout(() => {
+        titleArray.forEach(title => {
+          title.value.style.opacity = 1;
+        })
+      }, 1500)
+
     },
     // 加载中progress
     (itemUrl: any, itemsLoaded: any, itemsTotal: any) => {
       const progressRatio: Number = itemsLoaded / itemsTotal;
-      console.log(itemsLoaded, itemsTotal);
-      overLay.value.style.transform = `scaleX(${progressRatio})`
+      progress_bar.value.style.transform = `scaleX(${progressRatio})`
 
     }
   )
@@ -112,18 +145,19 @@ onMounted(() => {
   // 创建镜面平面(地面)
   const mirrorGeometry = new THREE.PlaneGeometry(20, 20);
   const mirror = new Reflector(mirrorGeometry, {
-    clipBias: 0.1,
+    clipBias: .1,
     textureWidth: window.innerWidth * window.devicePixelRatio,
     textureHeight: window.innerHeight * window.devicePixelRatio,
-    // color: 0xffffff,
+    multisample: 10,
+    // color: 0x000000,
     // 记得去纹理网站找个环境贴图, 合适的就行!!!
   })
   // mirror.rotation.x = Math.PI / 4;
   mirror.position.y = -1;
   mirror.position.z = .1;
   mirror.rotation.x = -Math.PI / 2;
-  gui.add(mirror.position, 'y').min(-2).max(2).step(.001).name('mirrorX')
-  gui.add(mirror.position, 'x').min(-2).max(2).step(.001).name('mirrorY')
+  gui.add(mirror.position, 'y').min(-2).max(2).step(.001).name('mirrorY')
+  gui.add(mirror.position, 'x').min(-2).max(2).step(.001).name('mirrorX')
   gui.add(mirror.position, 'z').min(-2).max(2).step(.001).name('mirrorZ')
   gui.add(mirror.rotation, 'x').min(-3.15).max(3.15).step(.001).name('mirrorRotateX')
   gui.add(mirror.rotation, 'y').min(-3.15).max(3.15).step(.001).name('mirrorRotateY')
@@ -235,25 +269,21 @@ onMounted(() => {
   <div class="homePage">
     <!-- 遮挡遮罩 -->
     <div class="overLay" ref="overLay">
-      {{ overLayText }}
+      <div class="progress_bar" ref="progress_bar"> {{ overLayText }}
+      </div>
+    </div>
+    <!-- 标题 -->
+    <div class="titleSection">
+      <h1 class="title" ref="title0" :data-index="0" @mouseover="titleMouseOverEvent" @mouseleave="titleMouseLeaveEvent">
+        CHUN QIU</h1>
+      <h1 class="title" ref="title1" :data-index="1" @mouseover="titleMouseOverEvent" @mouseleave="titleMouseLeaveEvent">
+        ZHAN GUO</h1>
+      <h1 class="title" ref="title2" :data-index="2" @mouseover="titleMouseOverEvent" @mouseleave="titleMouseLeaveEvent">
+        HAN
+      </h1>
     </div>
     <!-- threejs盒子 -->
     <div class="canvasBox" ref="canvasBox"></div>
-    <!--    <el-carousel
-                                        height="70vh"
-                                        direction="vertical"
-                                        :autoplay="true"
-                                        :interval="5000"
-                                        :loop="true"
-                                        :pause-on-hover="true"
-                                      >
-                                        <el-carousel-item v-for="(item, index) in homeContentList" :key="index">
-                                          <img :src="item.img" alt="" />
-                                          <h1 @click="toHistory(index)" title="点击阅读">{{ item.name }}</h1>
-                                          <p>{{ item.desc }}</p>
-                                        </el-carousel-item>
-                                      </el-carousel> -->
-
 
   </div>
 </template>
@@ -265,22 +295,60 @@ onMounted(() => {
   overflow: hidden;
 
   .overLay {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: 2px;
-    background: #ffffff;
-    transform: scaleX(0.1);
-    // transform-origin: top left;
-    transition: transform 0.5s;
-    text-align: center;
-    color: white;
-    line-height: 50px;
+    // position: absolute;
+    // width: 100%;
+    // background-color: black;
+    // height: 100%;
+    // z-index: 998;
+    // overflow: hidden;
+
+    .progress_bar {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      height: 2px;
+      background: #ffffff;
+      transform: scaleX(0.1);
+      // transform-origin: top left;
+      transition: transform 0.5s;
+      text-align: center;
+      color: white;
+      line-height: 100px;
+      font-size: 25px;
+      font-weight: 700;
+      z-index: 999;
+    }
+
+    .progress_bar.ended {
+      transform: scaleX(0);
+      transition: all 1.5s ease-in-out;
+    }
   }
 
-  .overLay.ended {
-    transform: scaleX(0);
-    transition: all 1.5s ease-in-out;
+
+
+
+
+  // 标题区域
+  .titleSection {
+    width: 700px;
+    height: 100vh;
+    position: absolute;
+    right: 30px;
+    // background-color: pink;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .title {
+      color: white;
+      width: 300px;
+      margin: 50px 0;
+      cursor: pointer;
+      transition: transform, opacity, .5s;
+      opacity: 0;
+    }
   }
 }
 </style>

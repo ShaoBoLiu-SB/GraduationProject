@@ -4,7 +4,12 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as dat from 'dat.gui';
+import { gsap } from 'gsap'
 let firstPage = ref(null);
+let overLay = ref(null);
+
+// 一些变量
+const overLayText = ref('loading');
 
 onMounted(() => {
   const scene = new THREE.Scene();  //场景
@@ -17,6 +22,8 @@ onMounted(() => {
   scene.add(axesHelper)
 
 
+
+
   // 设置相机位置
   camera.position.set(0, 0, 1);
   // 设置相机视图比例
@@ -25,8 +32,61 @@ onMounted(() => {
   camera.updateProjectionMatrix();
   scene.add(camera);
 
+  // 书写加载进度功能
+  /**
+ * Overlay遮罩层
+ */
+  const overlayGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
+  const overlayMaterial = new THREE.ShaderMaterial({
+    // wireframe: true,
+    transparent: true,
+    uniforms:
+    {
+      uAlpha: { value: 1 }
+    },
+    vertexShader: `
+        void main()
+        {
+            gl_Position = vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform float uAlpha;
 
-  const gltfLoader = new GLTFLoader();
+        void main()
+        {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, uAlpha);
+        }
+    `
+  })
+  const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial)
+  scene.add(overlay)
+  // 加载管理监视器
+  const loadingManager = new THREE.LoadingManager(
+    // 加载完毕loaded
+    () => {
+      // Wait a little
+      window.setTimeout(() => {
+        // Animate overlay
+        gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
+
+        // Update loadingBarElement
+        overLay.value.classList.add('ended')
+        overLay.value.style.transform = ''
+        overLayText.value = ''
+      }, 500)
+    },
+    // 加载中progress
+    (itemUrl: any, itemsLoaded: any, itemsTotal: any) => {
+      const progressRatio: Number = itemsLoaded / itemsTotal;
+      console.log(itemsLoaded, itemsTotal);
+      overLay.value.style.transform = `scaleX(${progressRatio})`
+
+    }
+  )
+
+  // 模型加载器
+  const gltfLoader = new GLTFLoader(loadingManager);
   gltfLoader.load('/src/assets/model/buddha.glb', (gltf: any) => {
     const model = gltf.scene;
     // model.scale.set(1, .1, .1);
@@ -47,7 +107,7 @@ onMounted(() => {
 
   gltfLoader.load('/src/assets/model/testCoin.glb', (gltf: any) => {
     const coin = gltf.scene;
-    scene.add(coin);
+    // scene.add(coin);
   })
 
   // 初始化渲染器
@@ -75,6 +135,8 @@ onMounted(() => {
   // scene.add(directionLight)
 
 
+
+
   // 渲染函数
   const render = () => {
     // 更新控制器
@@ -95,9 +157,35 @@ onUnmounted(() => {
 </script>
 
 <template>
+  <!-- 遮挡遮罩 -->
+  <div class="overLay" ref="overLay">
+    {{ overLayText }}
+  </div>
   <div class="section" ref="firstPage">
 
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.overLay {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: #ffffff;
+  transform: scaleX(0.1);
+  // transform-origin: top left;
+  transition: transform 0.5s;
+  text-align: center;
+  color: white;
+  line-height: 50px;
+  line-height: 100px;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.overLay.ended {
+  transform: scaleX(0);
+  transition: all 1.5s ease-in-out;
+}
+</style>

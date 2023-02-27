@@ -57,7 +57,6 @@ onMounted(() => {
       pos.preX = pos.curX;
       pos.preY = pos.curY;
     }
-    console.log(pos.preX, pos.curX);
 
 
     requestAnimationFrame(render)
@@ -148,5 +147,13 @@ onMounted(() => {
 #followDot.active {
   opacity: 0.5;
   transform: scale(0.5);
+}
+
+.hoverDot {
+  transform: scale(1.5);
+  background-color: cadetblue!important;
+}
+.hoverAsideBar {
+  background-color: gray;
 }
 </style>

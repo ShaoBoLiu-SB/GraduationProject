@@ -10,6 +10,7 @@ export const asideStore = defineStore('aside', {
       homeIcon, historyIcon, moneyIcon,
       confirmIndex: 0,
       followDotFlag: false,
+      asideHover: false,
     }
   },
 
@@ -19,7 +20,9 @@ export const asideStore = defineStore('aside', {
     },
     hoverDot(flag: boolean) {
       this.followDotFlag = flag;
-      
+    },
+    hoverAside(flag: boolean) {
+      this.asideHover = flag;
     }
   }
 })
