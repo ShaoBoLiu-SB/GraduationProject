@@ -11,7 +11,7 @@ const { confirmIndex } = storeToRefs(store);
 onMounted(() => { });
 
 // 菜单栏，写成数组，是为了循环渲染，然后动态添加类名
-const menuList: Array<string> = ["首页", "货币", "历史", "测试"];
+const menuList: Array<string> = ["首页", "展览", "历史", "测试"];
 let activeIndex = ref(0);
 // 获取到按钮这个dom元素
 const loginButton = ref(null);
@@ -54,11 +54,14 @@ function menuClick(index: number) {
     store.changeIndex(index);
   }
   if (index == 1) {
-    router.push("/money");
+    router.push("/gallery");
     store.changeIndex(index);
   }
   if (index == 2) {
-    router.push("/history");
+    router.push({
+      name: "history",
+      query: { articleId: 0, pid: 0 }
+    });
     store.changeIndex(index);
   }
   if (index == 3) {
@@ -70,7 +73,7 @@ function menuClick(index: number) {
 // 鼠标移到侧边栏上的菜单选项, 要有动画
 function activeAni(index: number) {
   activeIndex.value = index;
-    store.hoverDot(true);
+  store.hoverDot(true);
 }
 function deActiveAni() {
   store.hoverDot(false)
@@ -79,7 +82,7 @@ function deActiveAni() {
 // 点击显示隐藏侧边栏函数
 function showAsideBar(index: any) {
   asideBar.value.style.left = `0`
-  console.log('asideShow');
+  // console.log('asideShow');
   // activeIndex.value = index;
 }
 
@@ -111,7 +114,7 @@ function hideAsideBar() {
     </button>
 
 
-    <div class="menus" @mouseover="store.hoverAside(true)" >
+    <div class="menus" @mouseover="store.hoverAside(true)">
       <div class="menuItem" v-for="(menu, index) in menuList" :key="index" @mouseover="activeAni(index)"
         @click="menuClick(index)" @mouseleave="deActiveAni">
         <span class="dot" :class="{
@@ -275,7 +278,7 @@ function hideAsideBar() {
   justify-content: center;
   align-items: center;
   position: absolute;
-  right: -37px;
+  right: -35px;
   top: 5px;
   cursor: pointer;
 }

@@ -21,9 +21,9 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('@/pages/history/History.vue')
   },
   {
-    path:'/money',
-    name:'money',
-    component:() => import('@/pages/money/Money.vue')
+    path:'/gallery',
+    name:'gallery',
+    component:() => import('@/pages/gallery/gallery.vue')
   },
   {
     path:'/article',

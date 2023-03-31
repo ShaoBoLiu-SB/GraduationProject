@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Article: typeof import('./src/components/article/article.vue')['default']
     AsideControl: typeof import('./src/components/asideControl/asideControl.vue')['default']
+    ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
