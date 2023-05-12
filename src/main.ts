@@ -4,6 +4,7 @@ import router from '@/router/index'
 import App from './App.vue'
 // 引入一下 elementd的样式
 import 'element-plus/dist/index.css'  //引入element的css文件,要不然element的组件是没有样式的
+// 引入滚动条组件
 const app = createApp(App)
 
 // 注册使用pinia

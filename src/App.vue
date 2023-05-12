@@ -1,9 +1,16 @@
 <script setup lang="ts">
+// 自己的组件
 import AsideControl from "@/components/asideControl/asideControl.vue";
+// vue相关
 import { onMounted, ref } from "vue";
+// ts数据
 import { storeToRefs } from "pinia";
 import { asideStore } from "@/stores/aside";
+// 第三方组件
+
+// 资源文件
 import musicImg from '@/assets/temp/home/music.png'
+
 const store = asideStore();
 const { followDotFlag } = storeToRefs(store);
 let followDot = ref(null);
@@ -25,7 +32,7 @@ onMounted(() => {
     circle3.value.style.opacity = 1;
     setTimeout(() => {
       bgcControl();
-      bgm.value.volume = 0.5; //声音别太大
+      bgm.value.volume = 0.15 ; //声音别太大
     }, 10)
   }, 3500)
   // 按下鼠标左键、松开
@@ -149,9 +156,12 @@ function bgcControl() {
     <!-- 跟随鼠标的小点 -->
     <div class="followDot" :class="{ hoverDot: followDotFlag }" ref="followDot"> </div>
 
-    <div class="rightContiner">
-      <router-view></router-view>
-    </div>
+      <div class="rightContiner">
+        <router-view></router-view>
+      </div>
+
+
+
 
     <!-- 背景音乐 -->
     <div class="music">
@@ -160,8 +170,7 @@ function bgcControl() {
         <div class="circle1" ref="circle1"></div>
         <div class="circle2" ref="circle2"></div>
         <div class="circle3" ref="circle3"></div>
-        <img :src="musicImg" @click="bgcControl" ref="bgmLogo" @mouseover="activeAni"
-          @mouseleave="deActiveAni">
+        <img :src="musicImg" @click="bgcControl" ref="bgmLogo" @mouseover="activeAni" @mouseleave="deActiveAni">
       </div>
     </div>
   </div>

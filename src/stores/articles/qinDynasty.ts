@@ -3,6 +3,7 @@ import img1 from '@/assets/temp/home/3.jpg';
 import img2 from '@/assets/temp/home/4.jpg';
 import img3 from '@/assets/temp/home/5.jpg';
 import qin1 from '@/assets/temp/home/qin1.webp';
+import qin2 from  '@/assets/temp/home/qin2.png';
 
 export const qinDynasty = defineStore('qin', {
   state: () => {
@@ -83,7 +84,7 @@ export const qinDynasty = defineStore('qin', {
           id: 1,
           title: '全心全意为农民服务',
           desc: '吕不韦显然意识到，在农耕时代振兴服务业是不靠谱的。他看中的产业是农业一全心全意为农民服务， 即“重农兼末”，所有非农业都要为农人服务!',
-          img: img2,
+          img: qin2,
           paragraphs: [
             '如果由着商鞅的性子折腾，估计等不到统一中原， 秦国就得把自己折腾到亡国了。还好，秦国很快有了吕不韦。',
             '吕不韦生于卫国一个商人世家，本来是个很成功的商人。 这位很有前途的商人通过一笔生意华丽地转身为政治明星，为秦国统一天下奠定了坚实基础(秦灭六国，成于吕不韦)。吕不韦不仅告诉我们世界上哪种生意最赚钱，还用自己的生命诠释了“高收益、高风险”的真谛，因为，这笔最赚钱的生意最终断送了吕不韦的性命。',

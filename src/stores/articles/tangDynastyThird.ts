@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import img1 from '@/assets/temp/home/28.jpg';
-import img2 from '@/assets/temp/home/27.jpg';
-import img3 from '@/assets/temp/home/26.jpg';
-import img4 from '@/assets/temp/home/25.jpg';
-import img5 from '@/assets/temp/home/24.jpg';
+// import img1 from '@/assets/temp/home/28.jpg';
+// import img2 from '@/assets/temp/home/27.jpg';
+// import img3 from '@/assets/temp/home/26.jpg';
+// import img4 from '@/assets/temp/home/25.jpg';
+// import img5 from '@/assets/temp/home/24.jpg';
 
 export const tangDynastyThird = defineStore('tangDynastyThird', {
   state: () => {
@@ -13,7 +13,7 @@ export const tangDynastyThird = defineStore('tangDynastyThird', {
           id: 0,
           title: '货币战争之安史之乱',
           desc: '财富的力量是无穷的一即使只是名义 上的财富，持有这种货币的人也会在瞬间觉得自己成了富人，这在经济学上叫作“货币幻觉"。虽然幻觉终究是要破灭的，但在幻觉没破灭之前，感觉还是很好的。',
-          img: img1,
+          // img: img1,
           paragraphs: [
             '在历史的长焦镜头中，金钱永远可以代表利益，所谓“民心”不过是给大部分人一个公平赚钱的机会，这才是-个社会最大的“道德" ;在绚丽多姿的历史长卷中，金钱又永远不可能成为主角，它只是财富的一个符号，对与错，只在用钱的人。',
             '好了，从西周说起吧。',
@@ -47,7 +47,7 @@ export const tangDynastyThird = defineStore('tangDynastyThird', {
           id: 1,
           title: '盐铁专营的轮回',
           desc: '“盐铁专卖”是一种非正常的敛财途径，会刺痛所有人的眼睛，这些人也包括无法无天的歹徒。朝廷能推行盐铁专营，说到底是靠国家机器的暴力。既然封建官僚的暴力可以牟利,歹徒的暴力一样可以，刀头舔血的暴徒还不都是为了钱?',
-          img: img2,
+          // img: img2,
           paragraphs: [
             '西周王朝灭亡之后的两千多年里，人们不断思索:若诚如孔子所言，西周是一个政治清明、道德高尚、制度合理的王朝，为何这样的王朝也会在历史长河中湮灭?',
             '答:如果没有外敌，那么西周王室很有可能成为千年- -系的中华帝王家族，中华的历史可能会被完全改写。遗憾的是,历史不容假设,周王朝的西部有-一个强大的异族一犬戎，这个民族的存在使得西周依靠“王德”维持统治的愿望注定要落空。',
@@ -100,7 +100,7 @@ export const tangDynastyThird = defineStore('tangDynastyThird', {
           id: 2,
           title: '向富人征税',
           desc: '整个大唐帝国，只有他们才是真正的富人，才是真正的土地拥有者。他们只知盘剥不懂付出，更不知社会责任为何物;恰恰又是这些守财奴负贵着整个帝国的税收，他们怎么可能有动力维护社会公平，又怎么可能向自己征税?',
-          img: img3,
+          // img: img3,
           paragraphs: [
             '西周王朝灭亡之后的两千多年里，人们不断思索:若诚如孔子所言，西周是一个政治清明、道德高尚、制度合理的王朝，为何这样的王朝也会在历史长河中湮灭?',
             '答:如果没有外敌，那么西周王室很有可能成为千年- -系的中华帝王家族，中华的历史可能会被完全改写。遗憾的是,历史不容假设,周王朝的西部有-一个强大的异族一犬戎，这个民族的存在使得西周依靠“王德”维持统治的愿望注定要落空。',
@@ -153,7 +153,7 @@ export const tangDynastyThird = defineStore('tangDynastyThird', {
           id: 3,
           title: '唐末钱荒',
           desc: '贷款买官的封建官僚，到任之后所得到的利益又岂只是几千、几万缗铜钱?淮西节度使李希烈、淄青节度使李师道兵败后，所积铜钱都达到数百万缗，相当于国家十几年的铸币量!',
-          img: img4,
+          // img: img4,
           paragraphs: [
             '西周王朝灭亡之后的两千多年里，人们不断思索:若诚如孔子所言，西周是一个政治清明、道德高尚、制度合理的王朝，为何这样的王朝也会在历史长河中湮灭?',
             '答:如果没有外敌，那么西周王室很有可能成为千年- -系的中华帝王家族，中华的历史可能会被完全改写。遗憾的是,历史不容假设,周王朝的西部有-一个强大的异族一犬戎，这个民族的存在使得西周依靠“王德”维持统治的愿望注定要落空。',
@@ -206,7 +206,7 @@ export const tangDynastyThird = defineStore('tangDynastyThird', {
           id: 4,
           title: '小人物的救赎',
           desc: '“二王八司马”的势力范围只在长安附近，地方节度使是否买他们的账，完全要看各方力量相互博弈的最后结果。遗憾的是，这几位理想主义的书生，在没有任何外援的情况下就轻易对军权下手了。',
-          img: img5,
+          // img: img5,
           paragraphs: [
             '西周王朝灭亡之后的两千多年里，人们不断思索:若诚如孔子所言，西周是一个政治清明、道德高尚、制度合理的王朝，为何这样的王朝也会在历史长河中湮灭?',
             '答:如果没有外敌，那么西周王室很有可能成为千年- -系的中华帝王家族，中华的历史可能会被完全改写。遗憾的是,历史不容假设,周王朝的西部有-一个强大的异族一犬戎，这个民族的存在使得西周依靠“王德”维持统治的愿望注定要落空。',

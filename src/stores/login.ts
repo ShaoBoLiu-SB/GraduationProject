@@ -5,7 +5,7 @@ export const loginStore = defineStore('login', {
     return {
       account: null,
       password: null,
-      isLogin: false // 判断登录状态,默认未登录
+      isLogin: false, // 判断登录状态,默认未登录
     }
   },
   actions: {
@@ -13,6 +13,7 @@ export const loginStore = defineStore('login', {
     saveAccount(account: any, password: any) {
       this.account = account
       this.password = password
-    }
+    },
+
   }
 })

@@ -11,7 +11,7 @@ const { confirmIndex } = storeToRefs(store);
 onMounted(() => { });
 
 // 菜单栏，写成数组，是为了循环渲染，然后动态添加类名
-const menuList: Array<string> = ["首页", "展览", "历史", "测试"];
+const menuList: Array<string> = ["首页", "展览", "历史"];
 let activeIndex = ref(0);
 // 获取到按钮这个dom元素
 const loginButton = ref(null);
@@ -109,9 +109,9 @@ function hideAsideBar() {
       </svg>
     </div>
 
-    <button @mouseup="bigAndLink" @mousedown="littleAnimation" ref="loginButton" class="loginButton">
+    <!-- <button @mouseup="bigAndLink" @mousedown="littleAnimation" ref="loginButton" class="loginButton">
       登录
-    </button>
+    </button> -->
 
 
     <div class="menus" @mouseover="store.hoverAside(true)">
@@ -197,11 +197,11 @@ function hideAsideBar() {
 
   .menus {
     display: flex;
-    margin-top: 50px;
+    margin-top: 120px;
     flex-direction: column;
 
     .menuItem {
-      margin: 30px 0;
+      margin: 40px 0;
       font-size: 22px;
       height: 65px;
       width: 95px;

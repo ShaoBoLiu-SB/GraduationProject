@@ -142,6 +142,7 @@ onMounted(() => {
   // 控制器
   const controls = new OrbitControls(camera, renderer.domElement)
   // controls.enabled = false; //禁止使用控制器！
+  gui.add(controls, 'enabled')
 
 
   // 记录鼠标位置的对象

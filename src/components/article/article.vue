@@ -8,7 +8,9 @@ import { mingDynasty1 } from "@/stores/articles/mingDynasty";
 import { tangDynasty } from '@/stores/articles/tangDynasty';
 import { asideStore } from '@/stores/aside'
 
+// 第三方组件
 import { ElNotification } from 'element-plus'
+
 
 
 // three.js相关
@@ -170,11 +172,14 @@ function nextOne() {
 
 <template>
   <div class="article" ref="articleSection" @scroll="isScrollEnd">
-    <div class="title">{{ article.title }}</div>
-    <div class="paragraph" v-for="(p, index) in article.paragraphs">{{ p }}</div>
+      <div class="title">{{ article.title }}</div>
+      <div class="paragraphs">
+        <div class="paragraph" v-for="(p, index) in article.paragraphs">{{ p }}</div>
+      </div>
   </div>
   <div class="nextArticle" ref="nextArticle">
-    <h1 @mouseover="asideStoreData.hoverDot(true)" @mouseleave="asideStoreData.hoverDot(false)" @click="nextOne">浏览下一章节</h1>
+    <h1 @mouseover="asideStoreData.hoverDot(true)" @mouseleave="asideStoreData.hoverDot(false)" @click="nextOne">浏览下一章节
+    </h1>
     <span @click="toTop" @mouseover="asideStoreData.hoverDot(true)"
       @mouseleave="asideStoreData.hoverDot(false)">回到顶部</span>
   </div>
@@ -197,15 +202,22 @@ function nextOne() {
   z-index: 999;
   overflow-y: scroll;
   height: 100vh;
+  perspective: 200px;
+  transform-style: preserve-3d;
 
   .title {
     margin: 0 auto;
     text-align: center;
     font-size: 60px;
-    letter-spacing: 3px;
+    letter-spacing: 5px;
     font-weight: bold;
     color: white;
-    margin: 50px 0 50px;
+    margin: 50px 0 100px;
+    transform: translateZ(-50px);
+  }
+
+  .paragraphs {
+    transform: translateZ(5px);
   }
 
   .paragraph {

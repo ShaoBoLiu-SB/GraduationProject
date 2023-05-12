@@ -1,17 +1,25 @@
 <script lang="ts" setup>
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 // import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+// import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { ref, onMounted } from 'vue'
 import * as dat from 'dat.gui';
 import { gsap } from 'gsap'
 import { ElCarousel } from 'element-plus'
 import { useRouter } from 'vue-router';
 import { asideStore } from '@/stores/aside'
+import { homeStore } from '@/stores/home'
 
-const store = asideStore();
+// 引入组件
+import PoorWealth from './children/PoorWealth.vue';
+import ThePassword from './children/ThePassword.vue'
+import RuleOfMoney from './children/RuleOfMoney.vue';
+import Vicisstudes from './children/Vicissitudes.vue'
+
+const store = asideStore();  //边栏的仓库
+const homestore = homeStore(); //home页面的仓库
 const router = useRouter();
 
 // 一些数据和dom
@@ -34,6 +42,17 @@ const topTitle = ref(null)
 const btmTitle = ref(null)
 const startView = ref(null);
 
+// 确定去哪一节的flag
+const poorWealthFlag = ref(false);
+
+
+// 第四页dom元素
+const fence = ref(null)
+const left1 = ref(null)
+const left2 = ref(null)
+const right1 = ref(null)
+const right2 = ref(null)
+
 
 // 一些变量
 const overLayText = ref('loading');
@@ -43,6 +62,9 @@ let pageOneFn: any = null;
 let pageTwoFn: any = null;
 let pageThreeFn: any = null;
 let pageFourFn: any = null;
+let cameraTurnLeft: any = null;
+let cameraTurnRight: any = null;
+let cameraBack: any = null;
 
 onMounted(() => {
   const scene = new THREE.Scene();  //场景
@@ -62,6 +84,7 @@ onMounted(() => {
   // 更新相机投影矩阵,类似blender应用缩放
   camera.updateProjectionMatrix();
   scene.add(camera);
+
 
   // 书写加载进度功能
   /**
@@ -100,7 +123,6 @@ onMounted(() => {
       window.setTimeout(() => {
         // Animate overlay
         gsap.to(overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0, delay: 1 })
-
         // Update loadingBarElement
         overLay.value.classList.add('ended')
         overLay.value.style.transform = ''
@@ -115,7 +137,6 @@ onMounted(() => {
       const progressRatio: Number = itemsLoaded / itemsTotal;
       // console.log(itemsLoaded, itemsTotal);
       overLay.value.style.transform = `scaleX(${progressRatio})`
-
     }
   )
   // // 贴图加载器
@@ -129,22 +150,21 @@ onMounted(() => {
 
   // 把模型单独抽成一个变量，不能放在函数里面，局部作用域很麻烦。
   let buddhModel: any = null;
-  let inkCircle: any = null;
   // 模型加载器
   const gltfLoader = new GLTFLoader(loadingManager);
-  const dracoLoader = new DRACOLoader(); //压缩模型加载器（draco）
-  dracoLoader.setDecoderPath('three.js/examples/js/libs/draco/gltf/');//设置解压库文件路径
-  dracoLoader.setDecoderConfig({ type: 'js' })  //使用js方式解压
-  dracoLoader.preload();
-  gltfLoader.setDRACOLoader(dracoLoader);
-  // gltfLoader.load('/src/assets/model/buddha/buddha1.glb', (gltf: any) => {
-  gltfLoader.load('/public/buddha1.glb', (gltf: any) => {
+  // const dracoLoader = new DRACOLoader(); //压缩模型加载器（draco）
+  // dracoLoader.setDecoderPath('three.js/examples/js/libs/draco/gltf/');//设置解压库文件路径
+  // dracoLoader.setDecoderConfig({ type: 'js' })  //使用js方式解压
+  // dracoLoader.preload();
+  // gltfLoader.setDRACOLoader(dracoLoader);
+  gltfLoader.load('/src/assets/model/buddha.glb', (gltf: any) => {
+    // gltfLoader.load('/public/buddha1.glb', (gltf: any) => {
     buddhModel = gltf.scene;
     // buddhModel.position.set(0.16, 0, 0)
     buddhModel.position.set(0.35, 0, 0)
     buddhModel.rotation.y = 8.65;
     buddhModel.scale.set(0.05, 0.05, 0.05)
-    console.log(buddhModel);
+    // console.log(buddhModel);
 
     // console.log(buddhModel.children[0].geometry);
     gsap.to(buddhModel.position, { x: 0.16, duration: 2, delay: 1 })
@@ -165,6 +185,7 @@ onMounted(() => {
     pageOneFn = () => {
       gsap.to(buddhModel.position, { x: 0.16, y: 0, z: 0, duration: 1 })
       gsap.to(buddhModel.rotation, { y: -0.165, duration: 1 })
+      gsap.to(camera.position, { x: 0, duration: 1 })
     }
     pageTwoFn = () => {
       gsap.to(buddhModel.position, { x: 0, y: -0.043, z: 0, duration: 1, })
@@ -173,10 +194,21 @@ onMounted(() => {
     pageThreeFn = () => {
       gsap.to(buddhModel.position, { x: -0.09, y: -0.05, z: 0.77, duration: 1, })
       gsap.to(buddhModel.rotation, { y: -4.876, duration: 1, })
+      gsap.to(camera.position, { x: 0, duration: 1 })
+      pageBack();
     }
     pageFourFn = () => {
       gsap.to(buddhModel.position, { x: 0, y: -0.05, duration: 2, })
       gsap.to(buddhModel.rotation, { y: -0.109, duration: 2, })
+    }
+    cameraTurnLeft = () => {
+      gsap.to(camera.position, { x: -0.2, duration: 1 })
+    }
+    cameraTurnRight = () => {
+      gsap.to(camera.position, { x: 0.2, duration: 1 })
+    }
+    cameraBack = () => {
+      gsap.to(camera.position, { x: 0, duration: 1 })
     }
 
 
@@ -188,14 +220,16 @@ onMounted(() => {
     // gui.add(buddhModel.position, 'z').max(2).min(-1).step(.001)
     // gui.add(buddhModel.rotation, 'y').max(1).min(-7).step(.0001)
     // gui.add(buddhModel.rotation, 'z').max(.5).min(.5).step(.0001)
+    // gui.add(camera.position, 'x').max(1).min(-1).step(0.001);
 
 
   })
 
-  // 初始化渲染器
+  // 初始化渲染器·
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   // 设置渲染器大小
   renderer.setSize(window.innerWidth, window.innerHeight);
+  // 设置渲染地默认页面为透明（黑）
   renderer.setClearAlpha(0);
   // renderer.setClearColor(0xffffff, 1);
   renderer.shadowMap.enabled = true;
@@ -203,8 +237,8 @@ onMounted(() => {
   firstPage.value.appendChild(renderer.domElement);
 
   //添加控制器
-  const controls = new OrbitControls(camera, renderer.domElement)
-  controls.enabled = false;
+  // const controls = new OrbitControls(camera, renderer.domElement)
+  // controls.enabled = true;
   // 设置控制器阻尼
   // controls.enableDamping = true;
 
@@ -213,7 +247,8 @@ onMounted(() => {
   // scene.add(ambientLight);
 
   // 添加直射光
-  const directionLight = new THREE.DirectionalLight(0xffffff, 1);
+  const directionLight = new THREE.DirectionalLight(0xffffff, 4.5);
+  // directionLight.target = buddhModel
   directionLight.position.set(0, 2, 5);
   // directionLight.scale.set(10, 10);
   scene.add(directionLight)
@@ -375,6 +410,7 @@ function pageThreeHide() {
   circle1.value.style.transform = `translateY(${50}px)`;
   circle2.value.style.transform = `translateY(${50}px)`;
 }
+// 封装滚动到第四页的动画
 function pageFourShow() {
   topTitle.value.style.opacity = 1;
   setTimeout(() => {
@@ -386,13 +422,56 @@ function pageFourHide() {
   btmTitle.value.style.opacity = 0;
 }
 
+// 第四页点击相应的动画
+// 左侧第一个标题翻页
+function leftClick(index: number) {
+  fence.value.style.transform = `translateX(${0}vw)`
+  // 相机往左偏
+  cameraTurnLeft();
+  if (index == 1) {
+    // 调用home仓库里面的方法，把数据改为1；
+    homestore.changeComponent(1);
+  } else if (index == 3) {
+    homestore.changeComponent(3);
+  }
+}
+// 右侧标题翻页
+function rightClick(index: number) {
+  fence.value.style.transform = `translateX(${-200}vw)`
+  cameraTurnRight();
+  if (index == 2) {
+    homestore.changeComponent(2);
+  } else if (index == 4) {
+    homestore.changeComponent(4);
+  }
+}
+// 页面返回
+function pageBack() {
+  fence.value.style.transform = `translateX(${-100}vw)`
+  homestore.hideComponent();
+  cameraBack();
+}
+
 // 回到顶部
 function backTop() {
   carouselBox.value.setActiveItem(0);
   elIndex.value = 0;
   pageOneFn();
   startView.value.style.bottom = '-200px';
+}
 
+// 隐藏最下边的startview
+function hideStartView() {
+  startView.value.style.bottom = '-200px';
+}
+
+// 鼠标移入效果
+function mousehover() {
+  store.hoverDot(true)
+}
+// 鼠标移出效果
+function mouseleave() {
+  store.hoverDot(false);
 }
 
 
@@ -406,6 +485,9 @@ function backTop() {
   </div>
 
 
+
+
+  <!-- element轮播图 -->
   <div class="elSwiper" ref="elSwiper">
     <el-carousel height="100vh" trigger="click" :loop="false" indicator-position=none direction="vertical"
       :autoplay="false" @mousewheel="rollScroll" ref="carouselBox">
@@ -461,34 +543,64 @@ function backTop() {
       <el-carousel-item>
         <div class="pageFour" ref="pageFour">
           <div class="overLayCircle" ref="overLayCircle"></div>
-          <div class="titles">
-            <div class="top" ref="topTitle">
-              <div class="h1Boxs">
-                <h1>贫富的逻辑</h1>
-                <div class="line"></div>
+
+          <div class="centerContainer">
+            <div class="fence" ref="fence">
+              <div class="leftSection">
+                <PoorWealth></PoorWealth>
+                <ThePassword></ThePassword>
+                <div class="backSection">
+                  <img src="@/assets/temp/home/back1.png" @click="pageBack" @mouseover="mousehover"
+                    @mouseleave="mouseleave">
+                </div>
               </div>
-              <div class="h1Boxs">
-                <h1>金权的规则</h1>
-                <div class="line"></div>
+
+              <div class="titles">
+                <div class="top" ref="topTitle">
+                  <div class="h1Boxs">
+                    <h1 ref="left1" @click="leftClick(1)" @mouseover="mousehover" @mouseleave="mouseleave">贫富的逻辑</h1>
+                    <div class="line"></div>
+                  </div>
+                  <div class="h1Boxs">
+                    <h1 ref="right1" @click="rightClick(2)" @mouseover="mousehover" @mouseleave="mouseleave">金权的规则</h1>
+                    <div class="line"></div>
+                  </div>
+                </div>
+                <div class="bottom" ref="btmTitle">
+                  <div class="h1Boxs">
+                    <h1 ref="left2" @click="leftClick(3)" @mouseover="mousehover" @mouseleave="mouseleave">盛衰的密码</h1>
+                    <div class="line"></div>
+                  </div>
+                  <div class="h1Boxs">
+                    <h1 ref="right2" @click="rightClick(4)" @mouseover="mousehover" @mouseleave="mouseleave">人间的沧桑</h1>
+                    <div class="line"></div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="bottom" ref="btmTitle">
-              <div class="h1Boxs">
-                <h1>盛衰的密码</h1>
-                <div class="line"></div>
-              </div>
-              <div class="h1Boxs">
-                <h1>人间的沧桑</h1>
-                <div class="line"></div>
+
+              <div class="rightSection">
+                <RuleOfMoney></RuleOfMoney>
+                <Vicisstudes></Vicisstudes>
+                <div class="backSection">
+                  <img src="@/assets/temp/home/back.png" @click="pageBack" @mouseover="mousehover"
+                    @mouseleave="mouseleave">
+                </div>
               </div>
             </div>
           </div>
+
         </div>
       </el-carousel-item>
     </el-carousel>
   </div>
 
+  <!-- 提示鼠标滚动 -->
+  <div class="scroll-icon" :class="{ scroll_icon_hide: elIndex != 0 }"></div>
+
+  <!-- 开始探索 回到顶部 -->
   <div class="startView" ref="startView">
+    <img src="@/assets/temp/home/close.png" class="close" @click="hideStartView" @mouseover="mousehover"
+      @mouseleave="mouseleave">
     <h1 @click="router.push('/gallery')" @mouseover="store.hoverDot(true)" @mouseleave="store.hoverDot(false)">开始探索</h1>
     <span @click="backTop" @mouseover="store.hoverDot(true)" @mouseleave="store.hoverDot(false)">回到顶部</span>
   </div>
@@ -514,13 +626,15 @@ $fontColor: #ffffff;
   line-height: 100px;
   font-size: 25px;
   font-weight: 700;
-  z-index: 999;
+  z-index: 1;
 }
 
 .overLay.ended {
   transform: scaleX(0);
-  transition: all 1.5s ease-in-out;
+  transition: all 1.5s;
 }
+
+
 
 .elSwiper {
   position: fixed;
@@ -697,84 +811,141 @@ $fontColor: #ffffff;
     pointer-events: none;
   }
 
-  .titles {
+  .centerContainer {
     width: 100vw;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    position: relative;
 
-    .top,
-    .bottom {
-      // flex:1;
+    .fence {
+      position: absolute;
+      width: 300vw;
+      height: 100vh;
+      top: 0;
+      // background-color: pink;
+      transform: translateX(-100vw);
+      transition: transform 1s ease-in-out;
+    }
+
+    .leftSection,
+    .rightSection {
+      position: absolute;
       width: 100vw;
-      height: 30vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
+      height: 100vh;
+    }
 
-      .h1Boxs {
-        &:first-child {
-          margin-right: 280px;
+    .leftSection {
+
+      // background-color: blue;
+      .backSection {
+        width: 100px;
+        height: 50px;
+        position: absolute;
+        right: -45px;
+        bottom: 60px;
+
+        img {
+          width: 40px;
+          cursor: pointer;
         }
 
-        &:last-child {
-          margin-left: 280px;
+        h3 {
+          color: white;
         }
       }
     }
 
+    .rightSection {
+      left: 200vw;
 
-    .h1Boxs {
+      .backSection {
+        width: 100px;
+        height: 50px;
+        position: absolute;
+        left: 25px;
+        bottom: 20px;
+
+        img {
+          width: 40px;
+          cursor: pointer;
+        }
+
+        h3 {
+          color: white;
+        }
+      }
+    }
+
+    .titles {
+      // background-color: yellow;
+      position: absolute;
+      left: 100vw;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
 
-      h1 {
-        color: rgb(190, 189, 189);
-        // margin: 50px 0;
-        font-size: 60px;
-        // transition:all .5s;
+      .top,
+      .bottom {
+        // flex:1;
+        width: 100vw;
+        height: 30vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
 
-        &:hover {
-          cursor: pointer;
-          color: white;
-          text-decoration: dashed;
+        .h1Boxs {
+          &:first-child {
+            margin-right: 280px;
+          }
+
+          &:last-child {
+            margin-left: 280px;
+          }
         }
       }
 
-      h1:hover+.line {
-        width: 300px;
+
+      .h1Boxs {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        h1 {
+          color: rgb(190, 189, 189);
+          // margin: 50px 0;
+          font-size: 60px;
+          // transition:all .5s;
+
+          &:hover {
+            cursor: pointer;
+            color: white;
+            text-decoration: dashed;
+          }
+        }
+
+        h1:hover+.line {
+          width: 300px;
+        }
+
+        .line {
+          height: 2px;
+          width: 0px;
+          background-color: rgb(209, 209, 209);
+          transition: all .5s !important;
+        }
       }
 
-      .line {
-        height: 2px;
-        width: 0px;
-        background-color: rgb(209, 209, 209);
-        transition: all .5s !important;
-      }
-    }
-
-    .top,
-    .bottom {
-      opacity: 0;
-      transition: all 1s;
-
-      h1 {
-        // padding-bottom:10px;
-        // transition:all 1s;
-        // border-bottom:4px solid white;
+      .top,
+      .bottom {
+        opacity: 0;
         transition: all 1s;
 
-        // &:first-child {
-        //   margin-right: 280px;
-        // }
-
-        // &:last-child {
-        //   margin-left: 280px;
-        // }
+        h1 {
+          transition: all 1s;
+        }
       }
     }
   }
@@ -805,6 +976,101 @@ $fontColor: #ffffff;
     bottom: 20px;
     left: 30px;
     cursor: pointer;
+  }
+
+  .close {
+    position: absolute;
+    right: 30px;
+    top: 20px;
+    width: 25px;
+    cursor: pointer;
+  }
+}
+
+.scroll-icon {
+  visibility: visible;
+  position: fixed;
+  bottom: 3%;
+  left: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2em;
+  width: 1.2em;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.5);
+  border-radius: 2em;
+  border: solid 2px;
+  transition: all .4s;
+  opacity:1;
+
+  &::before {
+    position: absolute;
+    bottom: -20px;
+    left: -40px;
+    color:rgb(218, 218, 218);
+    content: '滚动鼠标开始探索';
+    width: 230px;
+    font-size: 13px;
+  }
+}
+
+.scroll_icon_hide {
+  visibility: hidden;
+  opacity:0;
+  transition:all .5s;
+}
+
+.scroll-icon:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.scroll-icon::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  background-color: #fff;
+  border-radius: 50%;
+  -webkit-animation: scroll-icon 2.2s infinite cubic-bezier(0.65, 0.05, 0.36, 1);
+  animation: scroll-icon 2.2s infinite cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+@-webkit-keyframes scroll-icon {
+  0% {
+    -webkit-transform: translateY(-12px);
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+
+  30%,
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: translateY(12px);
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
+
+@keyframes scroll-icon {
+  0% {
+    -webkit-transform: translateY(-12px);
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+
+  30%,
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: translateY(12px);
+    transform: translateY(12px);
+    opacity: 0;
   }
 }
 </style>
